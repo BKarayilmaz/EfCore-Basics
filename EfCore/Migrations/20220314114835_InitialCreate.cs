@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace EfCore.Migrations
 {
-    public partial class FirstMigration : Migration
+    public partial class InitialCreate : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,7 +12,7 @@ namespace EfCore.Migrations
                 columns: table => new
                 {
                     CategoryID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     CategoryName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
@@ -24,7 +25,7 @@ namespace EfCore.Migrations
                 columns: table => new
                 {
                     ProductID = table.Column<int>(nullable: false)
-                        .Annotation("Sqlite:Autoincrement", true),
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
                     ProductName = table.Column<string>(maxLength: 100, nullable: false),
                     ProductPrice = table.Column<decimal>(nullable: false)
                 },

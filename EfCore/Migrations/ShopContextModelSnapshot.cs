@@ -13,17 +13,18 @@ namespace EfCore.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.3");
+                .HasAnnotation("ProductVersion", "3.1.8")
+                .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
             modelBuilder.Entity("EfCore.Category", b =>
                 {
                     b.Property<int>("CategoryID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnType("TEXT");
+                        .HasColumnType("longtext CHARACTER SET utf8mb4");
 
                     b.HasKey("CategoryID");
 
@@ -34,15 +35,15 @@ namespace EfCore.Migrations
                 {
                     b.Property<int>("ProductID")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("INTEGER");
+                        .HasColumnType("int");
 
                     b.Property<string>("ProductName")
                         .IsRequired()
-                        .HasColumnType("TEXT")
+                        .HasColumnType("varchar(100) CHARACTER SET utf8mb4")
                         .HasMaxLength(100);
 
                     b.Property<decimal>("ProductPrice")
-                        .HasColumnType("TEXT");
+                        .HasColumnType("decimal(65,30)");
 
                     b.HasKey("ProductID");
 

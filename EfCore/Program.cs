@@ -20,8 +20,10 @@ namespace EfCore
             // optionsBuilder.UseSqlite("Data Source=ShopDb.dp");
 
             optionsBuilder.
-                UseLoggerFactory(MyLoggerFactory).
-                UseSqlite(@"Data Source=C:\Users\Bilgisayar\source\repos\EfCore\EfCore\ShopDb.dp");
+                UseLoggerFactory(MyLoggerFactory)
+               // UseSqlite(@"Data Source=C:\Users\Bilgisayar\source\repos\EfCore\EfCore\ShopDb.dp");
+               //.UseSqlServer(@"Data Source=DESKTOP-QVNJVT9\SQLEXPRESS;Initial Catalog=ShopDb;Integrated Security=SSPI;");
+               .UseMySql(@"server=localhost;port=3306;database=ShopDat;user=root;password=mysql1234");
         }
     }
     public class Product
@@ -33,6 +35,7 @@ namespace EfCore
         [Required] // Can Not Be Null
         public string ProductName { get; set; }
         public decimal ProductPrice { get; set; }//Decimal value type can not be null
+        public int CategoryID { get; set; }
     }
     public class Category
     {
@@ -45,7 +48,7 @@ namespace EfCore
     {
         static void Main(string[] args)
         {
-            DeleteProduct(6);
+            
         }
         static void DeleteProduct(int id)
         {
