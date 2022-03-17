@@ -3,14 +3,16 @@ using System;
 using EfCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace EfCore.Migrations
 {
     [DbContext(typeof(ShopContext))]
-    partial class ShopContextModelSnapshot : ModelSnapshot
+    [Migration("20220315103033_OneToOneRelation")]
+    partial class OneToOneRelation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -80,7 +82,7 @@ namespace EfCore.Migrations
                     b.HasIndex("UserID")
                         .IsUnique();
 
-                    b.ToTable("Customers");
+                    b.ToTable("Customer");
                 });
 
             modelBuilder.Entity("EfCore.Order", b =>
@@ -122,21 +124,6 @@ namespace EfCore.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("EfCore.ProductCategory", b =>
-                {
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ProductId", "CategoryId");
-
-                    b.HasIndex("CategoryId");
-
-                    b.ToTable("ProductCategory");
-                });
-
             modelBuilder.Entity("EfCore.User", b =>
                 {
                     b.Property<int>("UserID")
@@ -168,21 +155,6 @@ namespace EfCore.Migrations
                     b.HasOne("EfCore.User", "User")
                         .WithOne("Customer")
                         .HasForeignKey("EfCore.Customer", "UserID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("EfCore.ProductCategory", b =>
-                {
-                    b.HasOne("EfCore.Category", "Category")
-                        .WithMany("ProductCategories")
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("EfCore.Product", "Product")
-                        .WithMany("ProductCategories")
-                        .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
