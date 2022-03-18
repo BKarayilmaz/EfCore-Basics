@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EfCore.Data.EfCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -40,14 +41,55 @@ namespace EfCore
 
             modelBuilder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Product)
-                .WithMany(p=>p.ProductCategories)
-                .HasForeignKey(pc=>pc.ProductId);
+                .WithMany(p => p.ProductCategories)
+                .HasForeignKey(pc => pc.ProductId);
 
             modelBuilder.Entity<ProductCategory>()
                 .HasOne(pc => pc.Category)
                 .WithMany(c => c.ProductCategories)
                 .HasForeignKey(pc => pc.CategoryId);
         }
+    }
+
+    public static class DataSeeding
+    {
+        public static void Seed(DbContext context)
+        {
+            if (context.Database.GetPendingMigrations().Count() == 0)
+            {
+                //ShopContext
+                if(context is ShopContext)
+                {
+                    ShopContext _context = context as ShopContext;
+                    if (_context.Products.Count() == 0)
+                    {
+                        //Add Product
+                        _context.Products.AddRange(Products);
+                    }
+
+                    if (_context.Categories.Count() == 0)
+                    {
+                        //Add Category
+                        _context.Categories.AddRange(Categories);
+                    }
+                }
+            }
+        }
+
+        private static Product[] Products =
+        {
+            new Product(){ProductName="Huawei Band 6", ProductPrice=750},
+            new Product(){ProductName="Huawei Band 5", ProductPrice=650},
+            new Product(){ProductName="Huawei Band 4", ProductPrice=550},
+            new Product(){ProductName="Huawei Band 3", ProductPrice=450},
+        };
+
+        private static Category[] Categories =
+        {
+            new Category(){CategoryName="Phone"},
+            new Category(){CategoryName="Technology"},
+            new Category(){CategoryName="Computer"},
+        };
     }
 
     public class User
@@ -132,50 +174,62 @@ namespace EfCore
     {
         static void Main(string[] args)
         {
-            // InsertUsers();
-            // InsertAddresses();
-            using (ShopContext shopContext = new ShopContext())
+
+            DataSeeding.Seed(new ShopContext());
+
+            using(NorthwindContext northwindContext=new NorthwindContext())
             {
-                //var products = new List<Product>(){
-                //    new Product { ProductName = "Samsung S10", ProductPrice = 25000 },
-                //    new Product { ProductName = "Iphone 13Pro", ProductPrice = 35000 },
-                //    new Product { ProductName = "Apple Watch", ProductPrice = 8000 },
-                //    new Product { ProductName = "Mi Band", ProductPrice = 500 },
-                //};
-                //shopContext.Products.AddRange(products);
+                var products = northwindContext.Products.ToList();
 
-                //var categories = new List<Category>(){
-                //    new Category { CategoryName="Smart Watch" },
-                //    new Category { CategoryName="Phone" },
-                //    new Category { CategoryName="Technology" },
-                //};
-                //shopContext.Categories.AddRange(categories);
-
-
-                var categories = new int[2] { 1, 2 };
-                var p = shopContext.Products.Find(1);
-                p.ProductCategories = categories.Select(cid => new ProductCategory()
+                foreach (var item in products)
                 {
-                    CategoryId=cid,
-                    ProductId=p.ProductID
-                }).ToList();
-
-                    shopContext.SaveChanges();
-
-                //User user = new Usercategories
-                //{
-                //    Username = "defnesevil",
-                //    Email = "test@defnesevil.com",
-                //    Customer = new Customer()
-                //    {
-                //        Firstname = "Defne",
-                //        Lastname = "Sevil",
-                //        IdentityNumber = "423562425"
-                //    }
-                //};
-                //shopContext.Users.Add(user);
-                //shopContext.SaveChanges();
+                    Console.WriteLine(item.ProductName);
+                }
             }
+            //// InsertUsers();
+            //// InsertAddresses();
+            //using (ShopContext shopContext = new ShopContext())
+            //{
+            //    //var products = new List<Product>(){
+            //    //    new Product { ProductName = "Samsung S10", ProductPrice = 25000 },
+            //    //    new Product { ProductName = "Iphone 13Pro", ProductPrice = 35000 },
+            //    //    new Product { ProductName = "Apple Watch", ProductPrice = 8000 },
+            //    //    new Product { ProductName = "Mi Band", ProductPrice = 500 },
+            //    //};
+            //    //shopContext.Products.AddRange(products);
+
+            //    //var categories = new List<Category>(){
+            //    //    new Category { CategoryName="Smart Watch" },
+            //    //    new Category { CategoryName="Phone" },
+            //    //    new Category { CategoryName="Technology" },
+            //    //};
+            //    //shopContext.Categories.AddRange(categories);
+
+
+            //    var categories = new int[2] { 1, 2 };
+            //    var p = shopContext.Products.Find(1);
+            //    p.ProductCategories = categories.Select(cid => new ProductCategory()
+            //    {
+            //        CategoryId = cid,
+            //        ProductId = p.ProductID
+            //    }).ToList();
+
+            //    shopContext.SaveChanges();
+
+            //    //User user = new Usercategories
+            //    //{
+            //    //    Username = "defnesevil",
+            //    //    Email = "test@defnesevil.com",
+            //    //    Customer = new Customer()
+            //    //    {
+            //    //        Firstname = "Defne",
+            //    //        Lastname = "Sevil",
+            //    //        IdentityNumber = "423562425"
+            //    //    }
+            //    //};
+            //    //shopContext.Users.Add(user);
+            //    //shopContext.SaveChanges();
+            //}
         }
         static void InsertUsers()
         {
