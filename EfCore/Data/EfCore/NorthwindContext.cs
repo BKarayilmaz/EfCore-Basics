@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.Logging;
 
 namespace EfCore.Data.EfCore
 {
@@ -35,13 +36,16 @@ namespace EfCore.Data.EfCore
         public virtual DbSet<Shippers> Shippers { get; set; }
         public virtual DbSet<Strings> Strings { get; set; }
         public virtual DbSet<Suppliers> Suppliers { get; set; }
+        public static readonly ILoggerFactory MyLoggerFactory
+   = LoggerFactory.Create(builder => { builder.AddConsole(); });
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             if (!optionsBuilder.IsConfigured)
             {
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySql("server=localhost;port=3306;database=northwind;user=root;password=mysql1234", x => x.ServerVersion("8.0.19-mysql"));
+                optionsBuilder
+                    .UseLoggerFactory(MyLoggerFactory)
+                    .UseMySql("server=localhost;port=3306;database=northwind;user=root;password=mysql1234", x => x.ServerVersion("8.0.19-mysql"));
             }
         }
 
