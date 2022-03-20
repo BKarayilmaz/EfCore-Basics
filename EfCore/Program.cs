@@ -11,6 +11,28 @@ namespace EfCore
 
     class Program
     {
+        public class CustomerDemo
+        {
+            public CustomerDemo()
+            {
+                Orders = new List<OrderDemo>();
+            }
+            public int CustomerId { get; set; }
+            public string Name { get; set; }
+            public int OrderCount { get; set; }
+            public List<OrderDemo> Orders { get; set; }
+        }
+        public class OrderDemo
+        {
+            public int OrderId { get; set; }
+            public decimal Total { get; set; }
+            public List<ProductDemo> Products { get; set; }
+        }
+        public class ProductDemo
+        {
+            public int ProductId { get; set; }
+            public string Name { get; set; }
+        }
         static void Main(string[] args)
         {
             using (NorthwindContext northwindContext = new NorthwindContext())
@@ -115,7 +137,110 @@ namespace EfCore
                 Console.WriteLine("-----------------------------------------------");
             }
 
-           
+
+            using (NorthwindContext northwindContext = new NorthwindContext())
+            {
+                var customers = northwindContext.Customers
+                    .Where(i => i.Orders.Count > 0)//OR  .Where(i => i.Orders.Any())
+                    .Select(i => new CustomerDemo
+                    {
+                        Name = i.FirstName,
+                        CustomerId = i.Id,
+                        OrderCount = i.Orders.Count
+                    })
+                    .OrderBy(i => i.OrderCount)
+                    .ToList();
+                foreach (var item in customers)
+                {
+                    Console.WriteLine($"Id: {item.CustomerId} Name: {item.Name} Count: {item.OrderCount}");
+                }
+                Console.WriteLine("-----------------------------------------------");
+
+                var nCustomers = northwindContext.Customers
+                   .Where(i => i.Orders.Count > 0)//OR  .Where(i => i.Orders.Any())
+                   .Select(i => new CustomerDemo
+                   {
+                       Name = i.FirstName,
+                       CustomerId = i.Id,
+                       OrderCount = i.Orders.Count,
+                       Orders = i.Orders.Select(a => new OrderDemo
+                       {
+                           OrderId=a.Id,
+                           Total=(decimal)a.OrderDetails.Sum(od=>od.Quantity*od.UnitPrice)
+                       }).ToList()
+                   })
+                   .OrderBy(i => i.OrderCount)
+                   .ToList();
+                foreach (var customer in nCustomers)
+                {
+                    Console.WriteLine("       -----        ");
+                    Console.WriteLine($"Id: {customer.CustomerId} Name: {customer.Name} Count: {customer.OrderCount}");
+                    foreach (var order in customer.Orders)
+                    {
+                        Console.WriteLine($"Order Id: {order.OrderId} Total: {order.Total}");
+                    }
+                }
+                Console.WriteLine("-----------------------------------------------");
+
+                var idCustomers = northwindContext.Customers
+                  .Where(i => i.Id==8)
+                  .Select(i => new CustomerDemo
+                  {
+                      Name = i.FirstName,
+                      CustomerId = i.Id,
+                      OrderCount = i.Orders.Count,
+                      Orders = i.Orders.Select(a => new OrderDemo
+                      {
+                          OrderId = a.Id,
+                          Total = (decimal)a.OrderDetails.Sum(od => od.Quantity * od.UnitPrice)
+                      }).ToList()
+                  })
+                  .OrderBy(i => i.OrderCount)
+                  .ToList();
+                foreach (var customer in idCustomers)
+                {
+                    Console.WriteLine($"Id: {customer.CustomerId} Name: {customer.Name} Count: {customer.OrderCount}");
+                    foreach (var order in customer.Orders)
+                    {
+                        Console.WriteLine($"Order Id: {order.OrderId} Total: {order.Total}");
+                    }
+                }
+                Console.WriteLine("-----------------------------------------------");
+
+                var pCustomers = northwindContext.Customers
+                  .Where(i => i.Id == 8)
+                  .Select(i => new CustomerDemo
+                  {
+                      Name = i.FirstName,
+                      CustomerId = i.Id,
+                      OrderCount = i.Orders.Count,
+                      Orders = i.Orders.Select(a => new OrderDemo
+                      {
+                          OrderId = a.Id,
+                          Total = (decimal)a.OrderDetails.Sum(od => od.Quantity * od.UnitPrice),
+                          Products=a.OrderDetails.Select(p=>new ProductDemo { 
+                              ProductId=(int)p.ProductId,
+                              Name=p.Product.ProductName
+                          }).ToList()
+                      }).ToList()
+                  })
+                  .OrderBy(i => i.OrderCount)
+                  .ToList();
+                foreach (var customer in pCustomers)
+                {
+                    Console.WriteLine($"Id: {customer.CustomerId} Name: {customer.Name} Count: {customer.OrderCount}");
+                    foreach (var order in customer.Orders)
+                    {
+                        Console.WriteLine($"-Order Id: {order.OrderId} Total: {order.Total}");
+                        foreach (var product in order.Products)
+                        {
+                            Console.WriteLine($"--Product Id: {product.ProductId} Name: {product.Name}");
+                        }
+                    }
+                }
+                Console.WriteLine("-----------------------------------------------");
+            }
+
         }
 
     }
